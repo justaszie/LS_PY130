@@ -28,34 +28,61 @@ class Todo:
 
         return self.title == other.title and self.done == other.done
 
-def test_todo():
-    todo1 = Todo('Buy milk')
-    todo2 = Todo('Clean room')
-    todo3 = Todo('Go to gym')
-    todo4 = Todo('Clean room')
+class TodoList:
+    def __init__(self, title):
+        self._title = title
+        self._todos = []
 
-    print(todo1)                  # [ ] Buy milk
-    print(todo2)                  # [ ] Clean room
-    print(todo3)                  # [ ] Go to gym
-    print(todo4)                  # [ ] Clean room
+    @property
+    def title(self):
+        return self._title
 
-    print(todo2 == todo4)         # True
-    print(todo1 == todo2)         # False
-    print(todo4.done)             # False
+    def add(self, todo_item):
+        if not isinstance(todo_item, Todo):
+            raise TypeError('The item type should be Todo')
 
-    todo1.done = True
-    todo4.done = True
-    print(todo4.done)             # True
+        self._todos.append(todo_item)
 
-    print(todo1)                  # [X] Buy milk
-    print(todo2)                  # [ ] Clean room
-    print(todo3)                  # [ ] Go to gym
-    print(todo4)                  # [X] Clean room
+    def __str__(self):
+        result = f"---- {self.title} -----"
+        for todo in self._todos:
+            result += f"\n{todo}"
 
-    print(todo2 == todo4)         # False
+        return result
 
-    todo4.done = False
-    print(todo4.done)             # False
-    print(todo4)                  # [ ] Clean room
+    def __len__(self):
+        return len(self._todos)
 
-test_todo()
+    def first(self):
+        return self._todos[0]
+
+    def last(self):
+        return self._todos[-1]
+
+    def to_list(self):
+        return self._todos.copy()
+
+    def todo_at(self, idx):
+        return self._todos[idx]
+
+    def mark_done_at(self, idx):
+        self.todo_at(idx).done = True
+
+    def mark_undone_at(self, idx):
+        self.todo_at(idx).done = False
+
+    def mark_all_done(self):
+        # On purpose not accessing the underlying list directly
+        # Going through the public methods instead for better abstraction
+        for idx in range(len(self)):
+            self.mark_done_at(idx)
+
+    def mark_all_undone(self):
+        for idx in range(len(self)):
+            self.mark_undone_at(idx)
+
+    def all_done(self):
+        return all(todo.done for todo in self._todos)
+
+    def remove_at(self, idx):
+        del self._todos[idx]
